@@ -153,32 +153,41 @@ font-size:20px;display:flex;align-items:center;justify-content:center;
 </div>
 
 <script>
-/* INTRO */
+/* INTRO — only show the first time */
 const introScreen=document.getElementById("introScreen");
 const introKohn=document.getElementById("introKohn");
 
-setTimeout(()=>{
-  if(!introScreen) return;
-
-  /* Let the logo finish, then fade the logo itself away. */
-  const logo=introScreen.querySelector("svg");
-  if(logo){
-    logo.style.transition="opacity .9s ease";
-    logo.style.opacity="0";
-  }
-
-  /* Only after the logo has faded does the small name appear. */
+if(localStorage.getItem("gematriaIntroShown")==="yes"){
+  // Intro has already been shown — remove it immediately
+  if(introScreen) introScreen.remove();
+}else{
+  // First visit — play the intro normally
   setTimeout(()=>{
-    if(introKohn) introKohn.style.animationPlayState="running";
-  },900);
+    if(!introScreen) return;
 
-  /* Then quietly fade out the whole intro. */
-  setTimeout(()=>{
-    introScreen.style.opacity="0";
-    setTimeout(()=>introScreen.remove(),800);
-  },3200);
-},3800);
+    const logo=introScreen.querySelector("svg");
+    if(logo){
+      logo.style.transition="opacity .9s ease";
+      logo.style.opacity="0";
+    }
 
+    setTimeout(()=>{
+      if(introKohn) introKohn.style.animationPlayState="running";
+    },900);
+
+    setTimeout(()=>{
+      introScreen.style.opacity="0";
+
+      setTimeout(()=>{
+        introScreen.remove();
+
+        // Remember that the intro has now been shown
+        localStorage.setItem("gematriaIntroShown","yes");
+      },800);
+
+    },3200);
+  },3800);
+}
 /* DOM */
 const textEl=document.getElementById('text');
 const resultEl=document.getElementById('result');
