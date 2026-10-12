@@ -2,12 +2,6 @@
 <html lang="he">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#1e1e1e">
-<meta name="description" content="An offline Hebrew Gematria Calculator.">
-<link rel="manifest" href="./manifest.webmanifest">
-<link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
-<link rel="apple-touch-icon" href="./icons/icon-192.png">
 <title>Gematria Calculator</title>
 
 
@@ -23,6 +17,22 @@ position:fixed;inset:0;background:white;display:flex;align-items:center;justify-
 z-index:99999;overflow:hidden;opacity:1;transition:opacity .8s ease;
 }
 #introScreen svg{width:min(100vw,1600px);height:min(100vh,900px);display:block;overflow:visible}
+#introKohn{
+position:absolute;
+left:50%;
+top:50%;
+transform:translate(-50%,-50%);
+font-family:"Monotype Corsiva","Edwardian Script ITC","Segoe Script",cursive;
+font-size:34px;
+font-weight:400;
+letter-spacing:.3px;
+color:#000;
+white-space:nowrap;
+opacity:0;
+animation:kohnAppear 1.4s ease-in-out 4.7s forwards;
+}
+@keyframes kohnAppear{from{opacity:0}to{opacity:1}}
+
 
 #introCircle, #introLeftCurve, #introRightCurve{
 fill:none;stroke:#000;stroke-width:10;stroke-linecap:round;stroke-linejoin:round;
@@ -126,6 +136,7 @@ font-size:20px;display:flex;align-items:center;justify-content:center;
         pathLength="1"/>
 
 </svg>
+<div id="introKohn">Kohn Enterprises</div>
 </div>
 
 <div class="calculator">
@@ -144,11 +155,29 @@ font-size:20px;display:flex;align-items:center;justify-content:center;
 <script>
 /* INTRO */
 const introScreen=document.getElementById("introScreen");
+const introKohn=document.getElementById("introKohn");
+
 setTimeout(()=>{
   if(!introScreen) return;
-  introScreen.style.opacity="0";
-  setTimeout(()=>introScreen.remove(),800);
-},4500);
+
+  /* Let the logo finish, then fade the logo itself away. */
+  const logo=introScreen.querySelector("svg");
+  if(logo){
+    logo.style.transition="opacity .9s ease";
+    logo.style.opacity="0";
+  }
+
+  /* Only after the logo has faded does the small name appear. */
+  setTimeout(()=>{
+    if(introKohn) introKohn.style.animationPlayState="running";
+  },900);
+
+  /* Then quietly fade out the whole intro. */
+  setTimeout(()=>{
+    introScreen.style.opacity="0";
+    setTimeout(()=>introScreen.remove(),800);
+  },3200);
+},3800);
 
 /* DOM */
 const textEl=document.getElementById('text');
@@ -322,15 +351,5 @@ buttonsEl.appendChild(title);
 renderButtons();
 </script>
 
-<script>
-// Offline support: the app shell is cached by service-worker.js after first load.
-if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js').catch(error => {
-      console.error('Gematria offline support could not be registered:', error);
-    });
-  });
-}
-</script>
 </body>
 </html>
