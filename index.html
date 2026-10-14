@@ -4,19 +4,59 @@
 <meta charset="UTF-8">
 <title>Gematria Calculator</title>
 
-
 <style>
-body{margin:0;overflow:hidden;background:#1e1e1e;display:flex;justify-content:center;align-items:center;height:100vh;direction:rtl;font-family:Arial}
-canvas{position:fixed;top:0;left:0;z-index:0}
-
-.calculator{position:relative;z-index:2;background:#2b2b2b;border-radius:20px;padding:30px;width:420px}
-
-/* INTRO — circle, centre dot, then curves growing OUTWARD */
-#introScreen{
-position:fixed;inset:0;background:white;display:flex;align-items:center;justify-content:center;
-z-index:99999;overflow:hidden;opacity:1;transition:opacity .8s ease;
+body{
+margin:0;
+overflow:hidden;
+background:#1e1e1e;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+direction:rtl;
+font-family:Arial
 }
-#introScreen svg{width:min(100vw,1600px);height:min(100vh,900px);display:block;overflow:visible}
+
+canvas{
+position:fixed;
+top:0;
+left:0;
+z-index:0
+}
+
+.calculator{
+position:relative;
+z-index:2;
+background:#2b2b2b;
+border-radius:20px;
+padding:30px;
+width:420px
+}
+
+/* =========================
+   FIRST-TIME INTRO
+   ========================= */
+
+#introScreen{
+position:fixed;
+inset:0;
+background:white;
+display:flex;
+align-items:center;
+justify-content:center;
+z-index:99999;
+overflow:hidden;
+opacity:1;
+transition:opacity .8s ease;
+}
+
+#introScreen svg{
+width:min(100vw,1600px);
+height:min(100vh,900px);
+display:block;
+overflow:visible
+}
+
 #introKohn{
 position:absolute;
 left:50%;
@@ -29,31 +69,45 @@ letter-spacing:.3px;
 color:#000;
 white-space:nowrap;
 opacity:0;
-animation:kohnAppear 1.4s ease-in-out 4.7s forwards;
+animation:kohnAppear 1.4s ease-in-out 4.7s forwards
 }
-@keyframes kohnAppear{from{opacity:0}to{opacity:1}}
 
+@keyframes kohnAppear{
+from{opacity:0}
+to{opacity:1}
+}
 
-#introCircle, #introLeftCurve, #introRightCurve{
-fill:none;stroke:#000;stroke-width:10;stroke-linecap:round;stroke-linejoin:round;
+#introCircle,
+#introLeftCurve,
+#introRightCurve{
+fill:none;
+stroke:#000;
+stroke-width:10;
+stroke-linecap:round;
+stroke-linejoin:round
 }
 
 #introCircle{
-stroke-dasharray:1;stroke-dashoffset:1;
-animation:drawCircle 2.2s ease-in-out forwards;
+stroke-dasharray:1;
+stroke-dashoffset:1;
+animation:drawCircle 2.2s ease-in-out forwards
 }
 
-#introLeftCurve, #introRightCurve{
-stroke-dasharray:1;stroke-dashoffset:1;
-animation:drawCurve 1.8s ease-in-out 2s forwards;
+#introLeftCurve,
+#introRightCurve{
+stroke-dasharray:1;
+stroke-dashoffset:1;
+animation:drawCurve 1.8s ease-in-out 2s forwards
 }
 
 #introDot{
-fill:#000;opacity:0;
-animation:dotAppear .4s ease-in-out 1.8s forwards,
-           dotDisappear .8s ease-in-out 3s forwards;
+fill:#000;
+opacity:0;
+animation:
+dotAppear .4s ease-in-out 1.8s forwards,
+dotDisappear .8s ease-in-out 3s forwards;
 transform-box:fill-box;
-transform-origin:center;
+transform-origin:center
 }
 
 @keyframes drawCircle{
@@ -67,8 +121,14 @@ to{stroke-dashoffset:0}
 }
 
 @keyframes dotAppear{
-from{opacity:0;transform:scale(.25)}
-to{opacity:1;transform:scale(1)}
+from{
+opacity:0;
+transform:scale(.25)
+}
+to{
+opacity:1;
+transform:scale(1)
+}
 }
 
 @keyframes dotDisappear{
@@ -76,288 +136,1020 @@ from{opacity:1}
 to{opacity:0}
 }
 
-.star{position:absolute;top:8px;left:10px;color:white;cursor:pointer}
-.star.active{color:gold}
-.settingsBtn{position:absolute;top:8px;right:10px;cursor:pointer}
 
-.topnote{text-align:center;font-size:12px;color:#ccc}
+/* =========================
+   INSTRUCTIONS
+   ========================= */
 
-.display{background:#000;color:#0f0;padding:20px;border-radius:10px;margin-bottom:10px;min-height:100px;display:flex;flex-direction:column;justify-content:space-between}
-#text{font-size:32px;text-align:right;cursor:text}
-#result{font-size:30px;text-align:left;margin-top:10px}
-
-.buttons{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-
-button{
-height:70px;border:none;border-radius:12px;background:#444;color:white;
-font-size:20px;display:flex;align-items:center;justify-content:center;
+#instructionsScreen{
+position:fixed;
+inset:0;
+background:white;
+z-index:99998;
+display:none;
+align-items:center;
+justify-content:center;
+overflow:hidden;
+direction:ltr;
 }
 
-.equal{background:#34c759}
-.clear{background:#ff3b30}
-.space{background:orange;color:transparent}
-.toggle{background:#0a84ff;grid-column:3/span 2}
-.return{background:#0a84ff;grid-column:span 3}
+.instructionsBox{
+width:min(900px,88vw);
+max-height:86vh;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+text-align:center;
+color:#111;
+direction:ltr;
+}
 
-.full{grid-column:span 4;display:flex;justify-content:center;align-items:center}
-.calculator[data-theme='dark'] button{background:#183b66;color:#ffffff;box-shadow:none}
-.calculator[data-theme='dark'] .equal{background:#34c759;color:#000000}
-.calculator[data-theme='dark'] .clear{background:#000000;color:#ffffff}
-.calculator[data-theme='dark'] .space{background:#183b66;color:transparent}
-.calculator[data-theme='dark'] .toggle{background:#183b66;color:#ffffff}
-.calculator[data-theme='dark'] .return{background:#183b66;color:#ffffff}
-.colorBox{height:40px}
+.instructionsTitle{
+font-family:"Monotype Corsiva","Edwardian Script ITC","Segoe Script",cursive;
+font-size:44px;
+font-weight:400;
+margin-bottom:20px;
+}
+
+.instructionsText{
+font-family:Arial,sans-serif;
+font-size:20px;
+line-height:1.55;
+direction:ltr;
+text-align:left;
+width:100%;
+max-height:62vh;
+overflow:auto;
+padding-right:10px;
+box-sizing:border-box;
+}
+
+.instructionsText h3{
+font-size:21px;
+margin:13px 0 3px;
+}
+
+.instructionsText p{
+margin:0 0 9px;
+}
+
+.instructionsNext{
+margin-top:20px;
+width:220px;
+height:60px;
+border:none;
+border-radius:12px;
+background:#000;
+color:white;
+font-size:22px;
+cursor:pointer;
+}
+
+.instructionsNext:hover{
+background:#222;
+}
+
+
+/* =========================
+   CALCULATOR
+   ========================= */
+
+.star{
+position:absolute;
+top:8px;
+left:10px;
+color:white;
+cursor:pointer
+}
+
+.star.active{
+color:gold
+}
+
+.settingsBtn{
+position:absolute;
+top:8px;
+right:10px;
+cursor:pointer
+}
+
+.topnote{
+text-align:center;
+font-size:12px;
+color:#ccc
+}
+
+.display{
+background:#000;
+color:#0f0;
+padding:20px;
+border-radius:10px;
+margin-bottom:10px;
+min-height:100px;
+display:flex;
+flex-direction:column;
+justify-content:space-between
+}
+
+#text{
+font-size:32px;
+text-align:right;
+cursor:text
+}
+
+#result{
+font-size:30px;
+text-align:left;
+margin-top:10px
+}
+
+.buttons{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:10px
+}
+
+button{
+height:70px;
+border:none;
+border-radius:12px;
+background:#444;
+color:white;
+font-size:20px;
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer
+}
+
+.equal{
+background:#34c759
+}
+
+.clear{
+background:#ff3b30
+}
+
+.space{
+background:orange;
+color:transparent
+}
+
+.toggle{
+background:#0a84ff;
+grid-column:3/span 2
+}
+
+.return{
+background:#0a84ff;
+grid-column:span 3
+}
+
+.full{
+grid-column:span 4;
+display:flex;
+justify-content:center;
+align-items:center
+}
+
+.calculator[data-theme='dark'] button{
+background:#183b66;
+color:#ffffff;
+box-shadow:none
+}
+
+.calculator[data-theme='dark'] .equal{
+background:#34c759;
+color:#000000
+}
+
+.calculator[data-theme='dark'] .clear{
+background:#000000;
+color:#ffffff
+}
+
+.calculator[data-theme='dark'] .space{
+background:#183b66;
+color:transparent
+}
+
+.calculator[data-theme='dark'] .toggle{
+background:#183b66;
+color:#ffffff
+}
+
+.calculator[data-theme='dark'] .return{
+background:#183b66;
+color:#ffffff
+}
+
+.colorBox{
+height:40px
+}
+
+.historyItem{
+grid-column:span 4;
+height:60px;
+background:#444;
+color:white;
+font-size:18px;
+direction:rtl;
+}
+
+.calculator[data-theme='dark'] .historyItem{
+background:#183b66;
+}
+
+.historyEmpty{
+grid-column:span 4;
+height:60px;
+background:#444;
+color:white;
+}
+
 </style>
 </head>
 
 <body>
 
+<!-- =========================
+     FIRST-TIME LOGO INTRO
+     ========================= -->
+
 <div id="introScreen">
+
 <svg viewBox="0 0 1600 900" aria-hidden="true">
 
-  <!-- Circle -->
-  <circle id="introCircle"
-          cx="800" cy="450" r="345"
-          pathLength="1"/>
+<circle
+id="introCircle"
+cx="800"
+cy="450"
+r="345"
+pathLength="1"/>
 
-  <!-- Centre dot -->
-  <circle id="introDot"
-          cx="800" cy="500" r="8"/>
+<circle
+id="introDot"
+cx="800"
+cy="500"
+r="8"/>
 
-  <!-- Curves start at the dot and grow OUTWARD -->
-  <path id="introLeftCurve"
-        d="M 800 500
-           C 650 250, 300 190, 120 400"
-        pathLength="1"/>
+<path
+id="introLeftCurve"
+d="M 800 500
+   C 650 250, 300 190, 120 400"
+pathLength="1"/>
 
-  <path id="introRightCurve"
-        d="M 800 500
-           C 950 250, 1300 190, 1480 400"
-        pathLength="1"/>
+<path
+id="introRightCurve"
+d="M 800 500
+   C 950 250, 1300 190, 1480 400"
+pathLength="1"/>
 
 </svg>
+
 <div id="introKohn">Kohn Enterprises</div>
+
 </div>
 
+
+<!-- =========================
+     INSTRUCTIONS
+     ========================= -->
+
+<div id="instructionsScreen">
+
+<div class="instructionsBox">
+
+<div class="instructionsTitle">
+Gematria Calculator
+</div>
+
+<div class="instructionsText">
+
+<h3>Typing and Pasting</h3>
+<p>
+You can type Hebrew directly into the calculator.
+You can also paste Hebrew text into the display.
+The orange button adds a space.
+</p>
+
+<h3>⚙ Settings</h3>
+<p>
+Press the Settings button in the top-right corner to open the settings.
+From there you can switch between Light Mode and Dark Mode.
+</p>
+
+<h3>★ Mispar Katan</h3>
+<p>
+Press the star in the top-left corner to turn Mispar Katan on or off.
+The star turns gold when Mispar Katan is active.
+</p>
+
+<h3>= Save to History</h3>
+<p>
+Press the green = button to save your current calculation to your history.
+Your saved calculations remain available when you return to the calculator.
+Press Gematria Calculator to see the history.
+</p>
+
+<h3>Installing the App</h3>
+<p>
+If you are using Microsoft Edge, open the ⋯ menu,
+go to Tools then Apps, and choose Install this site as an app.
+Once installed, Gematria Calculator can be used offline.
+</p>
+
+</div>
+
+<button
+class="instructionsNext"
+onclick="finishIntroduction()">
+NEXT
+</button>
+
+</div>
+
+</div>
+
+
+<!-- =========================
+     CALCULATOR
+     ========================= -->
+
 <div class="calculator">
+
 <div class="star" onclick="toggleKatan()">★</div>
+
 <div class="settingsBtn" onclick="toggleSettings()">⚙️</div>
+
 <div class="topnote">בס״ד</div>
 
 <div class="display">
+
 <div id="text"></div>
+
 <div id="result">0</div>
+
 </div>
 
 <div class="buttons" id="buttons"></div>
+
 </div>
 
+
 <script>
-/* INTRO — only show the first time */
+
+/* =========================================================
+   INTRODUCTION
+   ========================================================= */
+
 const introScreen=document.getElementById("introScreen");
 const introKohn=document.getElementById("introKohn");
+const instructionsScreen=document.getElementById("instructionsScreen");
 
-if(localStorage.getItem("gematriaIntroShown")==="yes"){
-  // Intro has already been shown — remove it immediately
-  if(introScreen) introScreen.remove();
-}else{
-  // First visit — play the intro normally
-  setTimeout(()=>{
-    if(!introScreen) return;
+const introAlreadyShown=
+localStorage.getItem("gematriaIntroShown")==="yes";
 
-    const logo=introScreen.querySelector("svg");
-    if(logo){
-      logo.style.transition="opacity .9s ease";
-      logo.style.opacity="0";
-    }
 
-    setTimeout(()=>{
-      if(introKohn) introKohn.style.animationPlayState="running";
-    },900);
+function finishIntroduction(){
 
-    setTimeout(()=>{
-      introScreen.style.opacity="0";
+localStorage.setItem(
+"gematriaIntroShown",
+"yes"
+);
 
-      setTimeout(()=>{
-        introScreen.remove();
+instructionsScreen.style.opacity="0";
+instructionsScreen.style.transition="opacity .6s ease";
 
-        // Remember that the intro has now been shown
-        localStorage.setItem("gematriaIntroShown","yes");
-      },800);
+setTimeout(()=>{
+instructionsScreen.style.display="none";
+instructionsScreen.style.opacity="1";
+},600);
 
-    },3200);
-  },3800);
 }
-/* DOM */
+
+
+/* If the introduction has already been completed,
+   remove everything immediately. */
+
+if(introAlreadyShown){
+
+if(introScreen){
+introScreen.remove();
+}
+
+if(instructionsScreen){
+instructionsScreen.remove();
+}
+
+}
+
+
+/* First visit */
+
+else{
+
+setTimeout(()=>{
+
+if(!introScreen) return;
+
+const logo=introScreen.querySelector("svg");
+
+if(logo){
+
+logo.style.transition="opacity .9s ease";
+logo.style.opacity="0";
+
+}
+
+setTimeout(()=>{
+
+if(introKohn){
+introKohn.style.animationPlayState="running";
+}
+
+},300);
+
+setTimeout(()=>{
+
+introScreen.style.opacity="0";
+
+setTimeout(()=>{
+
+introScreen.remove();
+
+instructionsScreen.style.display="flex";
+
+},800);
+
+},3200);
+
+},4000);
+
+}
+
+
+/* =========================================================
+   DOM
+   ========================================================= */
+
 const textEl=document.getElementById('text');
 const resultEl=document.getElementById('result');
 const buttonsEl=document.getElementById('buttons');
 
-/* KEYBOARD */
+
+/* =========================================================
+   KEYBOARD
+   ========================================================= */
+
 document.addEventListener("keydown",e=>{
+
 if(document.getElementById("introScreen")) return;
 
-if(e.key==="Backspace"){currentText=currentText.slice(0,-1);updateDisplay();return;}
-if(e.key===" "){add(" ");return;}
-if(e.key==="Enter"){pressEquals();return;}
-if(/[\u0590-\u05FF]/.test(e.key)){add(e.key);}
-});
+if(document.getElementById("instructionsScreen")) return;
 
-/* PASTE */
-document.addEventListener("paste",e=>{
-if(document.getElementById("introScreen")) return;
+if(e.key==="Backspace"){
 
-let paste=(e.clipboardData||window.clipboardData).getData("text");
-paste=paste.replace(/[^\u0590-\u05FF\s]/g,"");
-currentText+=paste;
+currentText=currentText.slice(0,-1);
 updateDisplay();
+return;
+
+}
+
+if(e.key===" "){
+
+add(" ");
+return;
+
+}
+
+if(e.key==="Enter"){
+
+pressEquals();
+return;
+
+}
+
+if(/[\u0590-\u05FF]/.test(e.key)){
+
+add(e.key);
+
+}
+
 });
 
-/* LOGIC */
-function changeDensity(v){density=v;createParticles()}
-function changeBg(c){document.body.style.background=c}
 
-const gematria={'א':1,'ב':2,'ג':3,'ד':4,'ה':5,'ו':6,'ז':7,'ח':8,'ט':9,'י':10,'כ':20,'ך':20,'ל':30,'מ':40,'ם':40,'נ':50,'ן':50,'ס':60,'ע':70,'פ':80,'ף':80,'צ':90,'ץ':90,'ק':100,'ר':200,'ש':300,'ת':400};
+/* =========================================================
+   PASTE
+   ========================================================= */
 
-let currentText='',useKatan=false,showFinal=false,settingsMode=false;
-let lastCalculation={text:'',value:0};
+document.addEventListener("paste",e=>{
+
+if(document.getElementById("introScreen")) return;
+
+if(document.getElementById("instructionsScreen")) return;
+
+let paste=
+(e.clipboardData||window.clipboardData)
+.getData("text");
+
+paste=paste.replace(
+/[^\u0590-\u05FF\s]/g,
+""
+);
+
+currentText+=paste;
+
+updateDisplay();
+
+});
+
+
+/* =========================================================
+   LOGIC
+   ========================================================= */
+
+function changeDensity(v){
+
+density=v;
+
+createParticles();
+
+}
+
+
+function changeBg(c){
+
+document.body.style.background=c;
+
+}
+
+
+const gematria={
+'א':1,
+'ב':2,
+'ג':3,
+'ד':4,
+'ה':5,
+'ו':6,
+'ז':7,
+'ח':8,
+'ט':9,
+'י':10,
+'כ':20,
+'ך':20,
+'ל':30,
+'מ':40,
+'ם':40,
+'נ':50,
+'ן':50,
+'ס':60,
+'ע':70,
+'פ':80,
+'ף':80,
+'צ':90,
+'ץ':90,
+'ק':100,
+'ר':200,
+'ש':300,
+'ת':400
+};
+
+
+let currentText='';
+let useKatan=false;
+let showFinal=false;
+let settingsMode=false;
+
+let history=
+JSON.parse(
+localStorage.getItem("gematriaHistory")||"[]"
+);
+
+
+/* =========================================================
+   CALCULATE
+   ========================================================= */
 
 function calculateValue(t){
+
 let s=0;
+
 for(let c of t){
+
 if(gematria[c]){
+
 let v=gematria[c];
-if(useKatan){v=v%9||9}
-s+=v;
-}}
-return s;
+
+if(useKatan){
+
+v=v%9||9;
+
 }
+
+s+=v;
+
+}
+
+}
+
+return s;
+
+}
+
+
+/* =========================================================
+   DISPLAY
+   ========================================================= */
 
 function updateDisplay(){
+
 textEl.innerText=currentText||' ';
-resultEl.innerText=calculateValue(currentText);
+
+resultEl.innerText=
+calculateValue(currentText);
+
 }
 
-function add(l){currentText+=l;updateDisplay()}
-function clearAll(){currentText='';updateDisplay()}
+
+function add(l){
+
+currentText+=l;
+
+updateDisplay();
+
+}
+
+
+function clearAll(){
+
+currentText='';
+
+updateDisplay();
+
+}
+
+
+/* =========================================================
+   MISPAR KATAN
+   ========================================================= */
 
 function toggleKatan(){
+
 useKatan=!useKatan;
-document.querySelector('.star').classList.toggle('active');
+
+document
+.querySelector('.star')
+.classList
+.toggle('active');
+
 updateDisplay();
-}
 
-function toggleKeyboard(){showFinal=!showFinal;renderButtons()}
-function toggleSettings(){settingsMode=!settingsMode;renderButtons()}
-
-function setTheme(mode){
-  const dark=mode==='dark';
-  document.body.style.background=dark?'#000000':'#ffffff';
-  document.body.style.color=dark?'#ffffff':'#000000';
-  const calc=document.querySelector('.calculator');
-  calc.style.background=dark?'#2b2b2b':'#000000';
-  calc.style.color=dark?'#ffffff':'#000000';
-  calc.dataset.theme=mode;
-  renderButtons();
 }
 
 
-function pressEquals(){
-lastCalculation.text=currentText;
-lastCalculation.value=calculateValue(currentText);
-updateDisplay();
-}
+/* =========================================================
+   KEYBOARD / SETTINGS
+   ========================================================= */
 
-function loadLast(){
-if(lastCalculation.text){currentText=lastCalculation.text;updateDisplay();}
-}
+function toggleKeyboard(){
 
-/* BUTTONS */
-const normal=['א','ב','ג','ד','ה','ו','ז','ח','ט','י','כ','ל','מ','נ','ס','ע','פ','צ','ק','ר','ש','ת'];
-const finalK=['ך','ם','ן','ף','ץ'];
-
-function renderButtons(){
-buttonsEl.innerHTML='';
-
-if(settingsMode){
-let light=document.createElement('button');
-light.innerText='Light Mode';
-light.style.background='#ffffff';
-light.style.color='#000000';
-light.onclick=()=>setTheme('light');
-buttonsEl.appendChild(light);
-
-let dark=document.createElement('button');
-dark.innerText='Dark Mode';
-dark.style.background='#183b66';
-dark.style.color='#ffffff';
-dark.onclick=()=>setTheme('dark');
-buttonsEl.appendChild(dark);
-
-let back=document.createElement('button');
-back.className='return';
-back.innerText='חזור';
-back.onclick=toggleSettings;
-buttonsEl.appendChild(back);
-return;
-}
-
-if(showFinal){
-finalK.forEach(k=>{
-let b=document.createElement('button');
-b.innerText=k;
-b.onclick=()=>add(k);
-buttonsEl.appendChild(b);
-});
-
-let r=document.createElement('button');
-r.className='return';
-r.innerText='חזור';
-r.onclick=toggleKeyboard;
-buttonsEl.appendChild(r);
-return;
-}
-
-normal.forEach(k=>{
-let b=document.createElement('button');
-b.innerText=k;
-b.onclick=()=>add(k);
-buttonsEl.appendChild(b);
-});
-
-let t=document.createElement('button');
-t.className='toggle';
-t.innerText='סופיות';
-t.onclick=toggleKeyboard;
-buttonsEl.appendChild(t);
-
-let eq=document.createElement('button');
-eq.className='equal';
-eq.innerText='=';
-eq.onclick=pressEquals;
-buttonsEl.appendChild(eq);
-
-let sp=document.createElement('button');
-sp.className='space';
-sp.onclick=()=>add(' ');
-buttonsEl.appendChild(sp);
-
-let clr=document.createElement('button');
-clr.className='clear';
-clr.innerText='C';
-clr.onclick=clearAll;
-buttonsEl.appendChild(clr);
-
-let title=document.createElement('button');
-title.style.background='white';
-title.style.color='black';
-title.style.fontFamily="'Cormorant Garamond', cursive";
-title.innerText='Gematria Calculator';
-title.onclick=loadLast;
-buttonsEl.appendChild(title);
-}
+showFinal=!showFinal;
 
 renderButtons();
+
+}
+
+
+function toggleSettings(){
+
+settingsMode=!settingsMode;
+
+renderButtons();
+
+}
+
+
+/* =========================================================
+   THEME
+   ========================================================= */
+
+function setTheme(mode){
+
+const dark=mode==='dark';
+
+document.body.style.background=
+dark?'#000000':'#ffffff';
+
+document.body.style.color=
+dark?'#ffffff':'#000000';
+
+const calc=
+document.querySelector('.calculator');
+
+calc.style.background=
+dark?'#2b2b2b':'#000000';
+
+calc.style.color=
+dark?'#ffffff':'#000000';
+
+calc.dataset.theme=mode;
+
+renderButtons();
+
+}
+
+
+/* =========================================================
+   HISTORY
+   ========================================================= */
+
+function pressEquals(){
+
+if(!currentText.trim()){
+
+updateDisplay();
+
+return;
+
+}
+
+const calculation={
+
+text:currentText,
+
+value:calculateValue(currentText)
+
+};
+
+
+/* Save newest calculation first */
+
+history.unshift(calculation);
+
+
+/* Keep the last 50 calculations */
+
+history=history.slice(0,50);
+
+
+/* Save permanently */
+
+localStorage.setItem(
+"gematriaHistory",
+JSON.stringify(history)
+);
+
+updateDisplay();
+
+}
+
+
+/* =========================================================
+   SHOW HISTORY
+   ========================================================= */
+
+function loadLast(){
+
+buttonsEl.innerHTML='';
+
+if(history.length===0){
+
+let empty=document.createElement('button');
+
+empty.className='historyEmpty';
+
+empty.innerText='No saved calculations yet';
+
+buttonsEl.appendChild(empty);
+
+}else{
+
+history.forEach(item=>{
+
+let b=document.createElement('button');
+
+b.className='historyItem';
+
+b.innerText=
+item.text+"  =  "+item.value;
+
+b.onclick=()=>{
+
+currentText=item.text;
+
+updateDisplay();
+
+};
+
+buttonsEl.appendChild(b);
+
+});
+
+}
+
+
+let back=document.createElement('button');
+
+back.className='return';
+
+back.innerText='חזור';
+
+back.onclick=renderButtons;
+
+buttonsEl.appendChild(back);
+
+}
+
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+
+const normal=[
+'א','ב','ג','ד','ה','ו','ז','ח','ט','י',
+'כ','ל','מ','נ','ס','ע','פ','צ','ק','ר',
+'ש','ת'
+];
+
+
+const finalK=[
+'ך','ם','ן','ף','ץ'
+];
+
+
+function renderButtons(){
+
+buttonsEl.innerHTML='';
+
+
+/* SETTINGS */
+
+if(settingsMode){
+
+let light=document.createElement('button');
+
+light.innerText='Light Mode';
+
+light.style.background='#ffffff';
+
+light.style.color='#000000';
+
+light.onclick=()=>setTheme('light');
+
+buttonsEl.appendChild(light);
+
+
+let dark=document.createElement('button');
+
+dark.innerText='Dark Mode';
+
+dark.style.background='#183b66';
+
+dark.style.color='#ffffff';
+
+dark.onclick=()=>setTheme('dark');
+
+buttonsEl.appendChild(dark);
+
+
+let back=document.createElement('button');
+
+back.className='return';
+
+back.innerText='חזור';
+
+back.onclick=toggleSettings;
+
+buttonsEl.appendChild(back);
+
+return;
+
+}
+
+
+/* FINAL LETTERS */
+
+if(showFinal){
+
+finalK.forEach(k=>{
+
+let b=document.createElement('button');
+
+b.innerText=k;
+
+b.onclick=()=>add(k);
+
+buttonsEl.appendChild(b);
+
+});
+
+
+let r=document.createElement('button');
+
+r.className='return';
+
+r.innerText='חזור';
+
+r.onclick=toggleKeyboard;
+
+buttonsEl.appendChild(r);
+
+return;
+
+}
+
+
+/* NORMAL LETTERS */
+
+normal.forEach(k=>{
+
+let b=document.createElement('button');
+
+b.innerText=k;
+
+b.onclick=()=>add(k);
+
+buttonsEl.appendChild(b);
+
+});
+
+
+/* FINAL LETTERS BUTTON */
+
+let t=document.createElement('button');
+
+t.className='toggle';
+
+t.innerText='סופיות';
+
+t.onclick=toggleKeyboard;
+
+buttonsEl.appendChild(t);
+
+
+/* EQUALS */
+
+let eq=document.createElement('button');
+
+eq.className='equal';
+
+eq.innerText='=';
+
+eq.onclick=pressEquals;
+
+buttonsEl.appendChild(eq);
+
+
+/* SPACE */
+
+let sp=document.createElement('button');
+
+sp.className='space';
+
+sp.onclick=()=>add(' ');
+
+buttonsEl.appendChild(sp);
+
+
+/* CLEAR */
+
+let clr=document.createElement('button');
+
+clr.className='clear';
+
+clr.innerText='C';
+
+clr.onclick=clearAll;
+
+buttonsEl.appendChild(clr);
+
+
+/* HISTORY */
+
+let title=document.createElement('button');
+
+title.style.background='white';
+
+title.style.color='black';
+
+title.style.fontFamily=
+"'Cormorant Garamond', cursive";
+
+title.innerText='Gematria Calculator';
+
+title.onclick=loadLast;
+
+buttonsEl.appendChild(title);
+
+}
+
+
+/* Start calculator */
+
+renderButtons();
+
 </script>
 
 </body>
