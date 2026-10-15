@@ -368,6 +368,88 @@ background:#444;
 color:white;
 }
 
+
+
+/* =========================
+   DICTIONARY MODE (ADDED)
+   Existing calculator styling is otherwise unchanged.
+   ========================= */
+.dictionaryPanel{
+display:none;
+direction:rtl;
+margin-top:10px;
+background:#111;
+border-radius:10px;
+padding:12px;
+color:#fff;
+}
+.calculator.dictionary-active{
+max-height:94vh;
+overflow-y:auto;
+box-sizing:border-box;
+}
+.dictionaryPanel input{
+width:100%;
+box-sizing:border-box;
+height:52px;
+border:2px solid #555;
+border-radius:10px;
+background:#000;
+color:#0f0;
+font-size:28px;
+padding:8px 12px;
+margin-bottom:10px;
+}
+.dictionaryStatus{
+font-size:14px;
+color:#ccc;
+margin:4px 0 10px;
+}
+.dictionaryResults{
+max-height:45vh;
+overflow-y:auto;
+display:flex;
+flex-direction:column;
+gap:8px;
+}
+.dictionaryResult{
+border:1px solid #444;
+border-radius:9px;
+padding:10px;
+background:#222;
+text-align:right;
+direction:rtl;
+}
+.dictionaryWord{
+font-size:26px;
+color:#fff;
+font-weight:bold;
+}
+.dictionaryMeta{
+font-size:13px;
+line-height:1.6;
+color:#ddd;
+margin-top:4px;
+}
+.dictionaryMore{
+width:100%;
+height:48px;
+margin-top:10px;
+background:#0a84ff;
+}
+.dictionaryBack{
+width:100%;
+height:48px;
+margin-top:8px;
+background:#555;
+}
+.calculator[data-theme='dark'] .dictionaryPanel{
+background:#050505;
+}
+.calculator[data-theme='dark'] .dictionaryResult{
+background:#101010;
+}
+
 </style>
 </head>
 
@@ -493,6 +575,14 @@ NEXT
 
 </div>
 
+<div class="dictionaryPanel" id="dictionaryPanel">
+  <input id="dictionaryNumber" type="number" inputmode="numeric" min="0" step="1"
+         placeholder="הקלד מספר גימטריה" aria-label="Dictionary gematria number">
+  <div class="dictionaryStatus" id="dictionaryStatus">הזן מספר כדי לחפש מילים</div>
+  <div class="dictionaryResults" id="dictionaryResults"></div>
+  <button class="dictionaryMore" id="dictionaryMore" type="button" style="display:none">הצג עוד תוצאות</button>
+  <button class="dictionaryBack" id="dictionaryBack" type="button">חזור למחשבון</button>
+</div>
 <div class="buttons" id="buttons"></div>
 
 </div>
@@ -721,6 +811,12 @@ let currentText='';
 let useKatan=false;
 let showFinal=false;
 let settingsMode=false;
+let dictionaryMode=false;
+let dictionaryData=null;
+let dictionaryLoadPromise=null;
+let dictionaryMatches=[];
+let dictionaryShown=0;
+const DICTIONARY_PAGE_SIZE=100;
 
 let history=
 JSON.parse(
@@ -805,6 +901,7 @@ document
 .toggle('active');
 
 updateDisplay();
+if(dictionaryMode && dictionaryInput.value.trim()) searchDictionary();
 
 }
 
@@ -824,12 +921,154 @@ renderButtons();
 
 function toggleSettings(){
 
+if(dictionaryMode) closeDictionary();
 settingsMode=!settingsMode;
 
 renderButtons();
 
 }
 
+
+/* =========================================================
+   DICTIONARY MODE
+   Added under Light Mode and Dark Mode in Settings.
+   Loads the adjacent JSON file only when first opened.
+   ========================================================= */
+
+const dictionaryPanel=document.getElementById("dictionaryPanel");
+const dictionaryInput=document.getElementById("dictionaryNumber");
+const dictionaryStatus=document.getElementById("dictionaryStatus");
+const dictionaryResults=document.getElementById("dictionaryResults");
+const dictionaryMore=document.getElementById("dictionaryMore");
+const dictionaryBack=document.getElementById("dictionaryBack");
+const calculatorEl=document.querySelector(".calculator");
+const displayEl=document.querySelector(".display");
+
+function openDictionary(){
+  settingsMode=false;
+  dictionaryMode=true;
+  calculatorEl.classList.add("dictionary-active");
+  displayEl.style.display="none";
+  buttonsEl.style.display="none";
+  dictionaryPanel.style.display="block";
+  dictionaryInput.value="";
+  dictionaryResults.innerHTML="";
+  dictionaryStatus.textContent="טוען את המילון…";
+  dictionaryMore.style.display="none";
+  renderButtons();
+  loadDictionary();
+  setTimeout(()=>dictionaryInput.focus(),0);
+}
+
+function closeDictionary(){
+  dictionaryMode=false;
+  calculatorEl.classList.remove("dictionary-active");
+  dictionaryPanel.style.display="none";
+  displayEl.style.display="";
+  buttonsEl.style.display="grid";
+  dictionaryInput.value="";
+  dictionaryResults.innerHTML="";
+  dictionaryMatches=[];
+  dictionaryShown=0;
+  renderButtons();
+}
+
+async function loadDictionary(){
+  if(dictionaryData){
+    dictionaryStatus.textContent="המילון מוכן. הזן מספר לחיפוש.";
+    return;
+  }
+  if(!dictionaryLoadPromise){
+    dictionaryLoadPromise=fetch("gematria_dictionary.json", {cache:"force-cache"})
+      .then(response=>{
+        if(!response.ok) throw new Error("HTTP "+response.status);
+        return response.json();
+      })
+      .then(data=>{
+        if(!Array.isArray(data)) throw new Error("פורמט מילון לא תקין");
+        dictionaryData=data;
+        dictionaryStatus.textContent="המילון נטען: "+data.length.toLocaleString()+" צורות מילה. הזן מספר.";
+        return data;
+      })
+      .catch(error=>{
+        dictionaryLoadPromise=null;
+        dictionaryStatus.textContent="לא ניתן לטעון את המילון. ודא ש-gematria_dictionary.json נמצא ליד index.html ושאתה פותח את האתר דרך GitHub Pages.";
+        console.error("Dictionary load failed:",error);
+        throw error;
+      });
+  }
+  try { await dictionaryLoadPromise; }
+  catch(error) { /* status message is shown above */ }
+}
+
+function searchDictionary(){
+  const raw=dictionaryInput.value.trim();
+  dictionaryResults.innerHTML="";
+  dictionaryMore.style.display="none";
+  dictionaryShown=0;
+  if(!raw){
+    dictionaryMatches=[];
+    dictionaryStatus.textContent=dictionaryData
+      ? "הזן מספר כדי למצוא מילים תואמות."
+      : "טוען את המילון…";
+    return;
+  }
+  if(!dictionaryData){
+    dictionaryStatus.textContent="המילון עדיין נטען…";
+    return;
+  }
+  const value=Number(raw);
+  if(!Number.isSafeInteger(value) || value<0){
+    dictionaryStatus.textContent="הזן מספר שלם שאינו שלילי.";
+    return;
+  }
+  const key=useKatan ? "misparKatan" : "gematria";
+  dictionaryMatches=dictionaryData
+    .filter(item=>item[key]===value)
+    .sort((a,b)=>b.occurrences-a.occurrences || a.word.localeCompare(b.word,"he"));
+  if(dictionaryMatches.length===0){
+    dictionaryStatus.textContent="לא נמצאו מילים עם "+(useKatan?"Mispar Katan":"Gematria")+" "+value+".";
+    return;
+  }
+  dictionaryStatus.textContent=
+    dictionaryMatches.length.toLocaleString()+" תוצאות עבור "+
+    (useKatan?"Mispar Katan":"Gematria")+" "+value+
+    ". מוצגות תוצאות לפי שכיחות.";
+  renderDictionaryPage();
+}
+
+function renderDictionaryPage(){
+  const end=Math.min(dictionaryShown+DICTIONARY_PAGE_SIZE,dictionaryMatches.length);
+  const fragment=document.createDocumentFragment();
+  for(let i=dictionaryShown;i<end;i++){
+    const item=dictionaryMatches[i];
+    const card=document.createElement("div");
+    card.className="dictionaryResult";
+    const word=document.createElement("div");
+    word.className="dictionaryWord";
+    word.textContent=item.word;
+    const meta=document.createElement("div");
+    meta.className="dictionaryMeta";
+    meta.textContent=
+      "גימטריה: "+item.gematria+
+      " · Mispar Katan: "+item.misparKatan+
+      " · הופעות במאגר: "+Number(item.occurrences).toLocaleString()+
+      " · מקורות: "+(Array.isArray(item.sources)?item.sources.join(", "):item.sources);
+    card.append(word,meta);
+    fragment.appendChild(card);
+  }
+  dictionaryResults.appendChild(fragment);
+  dictionaryShown=end;
+  dictionaryMore.style.display=end<dictionaryMatches.length?"flex":"none";
+  if(end>0){
+    dictionaryStatus.textContent=
+      "מוצגות "+end.toLocaleString()+" מתוך "+dictionaryMatches.length.toLocaleString()+" תוצאות.";
+  }
+}
+
+dictionaryInput.addEventListener("input",searchDictionary);
+dictionaryMore.addEventListener("click",renderDictionaryPage);
+dictionaryBack.addEventListener("click",closeDictionary);
 
 /* =========================================================
    THEME
@@ -1013,6 +1252,12 @@ dark.onclick=()=>setTheme('dark');
 
 buttonsEl.appendChild(dark);
 
+let dictionaryButton=document.createElement('button');
+dictionaryButton.className='full';
+dictionaryButton.innerText='Dictionary / מילון';
+dictionaryButton.style.background='#0a84ff';
+dictionaryButton.onclick=openDictionary;
+buttonsEl.appendChild(dictionaryButton);
 
 let back=document.createElement('button');
 
