@@ -986,7 +986,7 @@ async function loadDictionary(){
       .then(data=>{
         if(!Array.isArray(data)) throw new Error("פורמט מילון לא תקין");
         dictionaryData=data;
-        dictionaryStatus.textContent="המילון נטען: "+data.length.toLocaleString()+" צורות מילה. הזן מספר.";
+        dictionaryStatus.innerText='';
         return data;
       })
       .catch(error=>{
