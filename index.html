@@ -368,6 +368,14 @@ background:#444;
 color:white;
 }
 
+/* History's Back button matches the full-width history rows. */
+.historyReturn{
+  grid-column:span 4;
+  width:100%;
+  height:60px;
+  box-sizing:border-box;
+}
+
 
 
 /* =========================
@@ -447,6 +455,402 @@ background:#050505;
 }
 .calculator[data-theme='dark'] .dictionaryResult{
 background:#101010;
+}
+
+
+/* =========================
+   POLISHED CALCULATOR LAYER
+   ========================= */
+
+/* These visual improvements keep the existing layout intact. */
+.calculator{
+  box-sizing:border-box;
+  box-shadow:0 18px 45px rgba(0,0,0,.38), 0 3px 10px rgba(0,0,0,.25);
+  transition:box-shadow .25s ease, background .25s ease, transform .2s ease;
+}
+
+.display{
+  box-shadow:inset 0 2px 8px rgba(0,0,0,.55), 0 2px 5px rgba(0,0,0,.22);
+  transition:box-shadow .25s ease, background .25s ease;
+}
+
+button{
+  position:relative;
+  overflow:hidden;
+  box-shadow:0 4px 0 rgba(0,0,0,.22), 0 6px 12px rgba(0,0,0,.12);
+  transition:transform .08s ease, box-shadow .08s ease, filter .15s ease, background .25s ease, color .25s ease;
+  user-select:none;
+  -webkit-user-select:none;
+  -webkit-tap-highlight-color:transparent;
+}
+
+button:hover{
+  filter:brightness(1.08);
+}
+
+button:active,
+button.button-pressed{
+  transform:translateY(3px);
+  box-shadow:0 1px 0 rgba(0,0,0,.22), 0 2px 5px rgba(0,0,0,.10);
+}
+
+.calculator.smooth-ui,
+.calculator.smooth-ui button,
+.calculator.smooth-ui .display,
+.calculator.smooth-ui #text,
+.calculator.smooth-ui #result,
+.calculator.smooth-ui .star,
+.calculator.smooth-ui .settingsBtn{
+  transition-duration:.25s;
+}
+
+.calculator.smooth-ui #result{
+  animation:resultSoftChange .18s ease;
+}
+
+@keyframes resultSoftChange{
+  from{opacity:.55;transform:translateY(2px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.star{
+  transition:color .2s ease, text-shadow .2s ease, transform .15s ease;
+}
+
+.star.active{
+  text-shadow:0 0 8px rgba(255,215,0,.55);
+}
+
+.star:active{
+  transform:scale(.88);
+}
+
+.settingsBtn{
+  transition:transform .18s ease, opacity .18s ease;
+}
+
+.settingsBtn:hover{
+  transform:rotate(18deg);
+}
+
+.settingsBtn:active{
+  transform:rotate(18deg) scale(.9);
+}
+
+/* Settings controls */
+.settingLabel{
+  grid-column:span 4;
+  height:34px;
+  min-height:34px;
+  background:transparent !important;
+  box-shadow:none !important;
+  color:#ccc !important;
+  font-size:15px;
+  cursor:default;
+  pointer-events:none;
+}
+
+.settingOption{
+  min-height:58px;
+}
+
+.settingOption.activeSetting{
+  outline:2px solid rgba(255,255,255,.8);
+  outline-offset:-3px;
+}
+
+.settingSubtle{
+  grid-column:span 4;
+  height:36px;
+  min-height:36px;
+  background:transparent !important;
+  box-shadow:none !important;
+  color:#aaa !important;
+  font-size:13px;
+  cursor:default;
+  pointer-events:none;
+}
+
+.themeChoice.classicTheme{background:#444;color:#fff}
+.themeChoice.midnightTheme{background:#183b66;color:#fff}
+.themeChoice.slateTheme{background:#59636d;color:#fff}
+.themeChoice.whiteTheme{background:#f2f2f2;color:#111}
+
+.calculator[data-theme='light'] button{
+  box-shadow:0 4px 0 rgba(0,0,0,.16), 0 6px 12px rgba(0,0,0,.08);
+}
+
+.calculator[data-theme='light'] .settingLabel,
+.calculator[data-theme='light'] .settingSubtle{
+  color:#bbb !important;
+}
+
+@media (max-width:520px){
+  .calculator{
+    transform-origin:center center;
+  }
+}
+
+
+.calculator button:not(.equal):not(.clear):not(.space):not(.toggle):not(.return):not(.historyItem):not(.historyEmpty):not(.dictionaryMore):not(.dictionaryBack):not(.settingLabel):not(.settingSubtle){
+  background:var(--calculator-button,#444);
+  color:var(--calculator-text,#fff);
+}
+
+
+/* =========================
+   PHYSICAL CALCULATOR CASING + SETTINGS
+   The casing is built from layered gradients, a thick lower edge,
+   and real-looking highlights/shadows rather than a simple outline.
+   ========================= */
+
+body{
+  background:#050505;
+  perspective:1200px;
+}
+
+.calculator{
+  position:relative;
+  isolation:isolate;
+  box-sizing:border-box;
+  width:420px;
+  padding:30px;
+  border:0;
+  border-radius:30px;
+  background:
+    linear-gradient(112deg,rgba(255,255,255,.075) 0%,rgba(255,255,255,0) 18%,rgba(0,0,0,0) 76%,rgba(0,0,0,.22) 100%),
+    linear-gradient(180deg,#373737 0%,#303030 12%,#292929 58%,#242424 100%);
+  box-shadow:
+    0 5px 0 #202020,
+    0 9px 0 #151515,
+    0 17px 18px rgba(0,0,0,.52),
+    0 35px 55px rgba(0,0,0,.58),
+    inset 0 2px 1px rgba(255,255,255,.13),
+    inset 2px 0 3px rgba(255,255,255,.035),
+    inset -3px 0 5px rgba(0,0,0,.2),
+    inset 0 -5px 8px rgba(0,0,0,.25);
+  transform-origin:center center;
+  transform:scale(var(--calculator-scale,1));
+}
+
+/* Rounded moulded rim catches light at the top and falls into shade below. */
+.calculator::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  padding:2px;
+  background:linear-gradient(155deg,rgba(255,255,255,.19),rgba(255,255,255,.035) 24%,rgba(0,0,0,.08) 58%,rgba(0,0,0,.36));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  mask-composite:exclude;
+  pointer-events:none;
+  z-index:5;
+}
+
+/* A soft top highlight gives the shell a moulded, curved surface. */
+.calculator::after{
+  content:"";
+  position:absolute;
+  top:2px;
+  left:30px;
+  right:30px;
+  height:1px;
+  border-radius:50%;
+  background:rgba(255,255,255,.14);
+  box-shadow:0 1px 4px rgba(255,255,255,.06);
+  pointer-events:none;
+  z-index:6;
+}
+
+.display{
+  border:1px solid rgba(255,255,255,.035);
+  background:linear-gradient(180deg,#030303 0%,#000 100%);
+  box-shadow:
+    inset 0 7px 15px rgba(0,0,0,.92),
+    inset 0 -2px 3px rgba(255,255,255,.035),
+    0 1px 0 rgba(255,255,255,.045),
+    0 4px 0 rgba(0,0,0,.24),
+    0 7px 12px rgba(0,0,0,.34);
+}
+
+.settingLabel{
+  grid-column:span 4;
+  width:100%;
+  height:28px;
+  min-height:28px;
+  margin:4px 0 0;
+  padding:0;
+  background:transparent !important;
+  box-shadow:none !important;
+  color:#bbb !important;
+  font-size:14px;
+  font-weight:bold;
+  letter-spacing:.4px;
+  cursor:default;
+  pointer-events:none;
+}
+
+.themeIconRow{
+  grid-column:span 4;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:24px;
+  height:56px;
+}
+
+.themeIcon{
+  width:54px;
+  height:54px;
+  min-height:54px;
+  padding:0;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,.16);
+  font-size:29px;
+  box-shadow:0 4px 9px rgba(0,0,0,.22);
+}
+
+.lightIcon{background:#fff !important;color:#111 !important}
+.darkIcon{background:#111 !important;color:#fff !important}
+.themeIcon:hover{transform:scale(1.05)}
+.themeIcon:active{transform:scale(.94)}
+
+.themeChoicesRow{
+  grid-column:span 4;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+  width:100%;
+  height:48px;
+}
+
+.themeChoice{
+  height:48px;
+  min-height:48px;
+  border-radius:10px;
+  font-size:13px;
+  padding:0 3px;
+  box-shadow:0 3px 7px rgba(0,0,0,.18);
+}
+
+.themeChoice.activeSetting{
+  outline:2px solid #fff;
+  outline-offset:-4px;
+}
+
+.classicTheme{background:#444 !important;color:#fff !important}
+.midnightTheme{background:#183b66 !important;color:#fff !important}
+.slateTheme{background:#59636d !important;color:#fff !important}
+.whiteTheme{background:#eee !important;color:#111 !important}
+
+.feelRow{
+  grid-column:span 4;
+  width:100%;
+  min-height:42px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:0 8px;
+  box-sizing:border-box;
+  background:#383838;
+  border-radius:10px;
+  box-shadow:0 3px 7px rgba(0,0,0,.18);
+}
+
+.feelName{
+  min-width:0;
+  flex:1;
+  color:#fff;
+  font-size:15px;
+  line-height:1;
+  text-align:left;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.switch{
+  position:relative;
+  flex:0 0 auto;
+  width:48px;
+  height:26px;
+  min-height:26px;
+  padding:0;
+  border-radius:999px;
+  border:0;
+  background:#555 !important;
+  box-shadow:inset 0 2px 4px rgba(0,0,0,.3);
+}
+
+.switch::after{
+  content:"";
+  position:absolute;
+  width:20px;
+  height:20px;
+  top:3px;
+  left:3px;
+  border-radius:50%;
+  background:#fff;
+  box-shadow:0 2px 4px rgba(0,0,0,.35);
+  transition:left .16s ease;
+}
+
+.switch.on{background:#34c759 !important}
+.switch.on::after{left:25px}
+
+.sizeRow{
+  grid-column:span 4;
+  width:100%;
+  min-height:58px;
+  padding:6px 8px 4px;
+  box-sizing:border-box;
+  background:#383838;
+  border-radius:10px;
+  box-shadow:0 3px 7px rgba(0,0,0,.18);
+}
+
+.sizeTop{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:4px;
+  color:#fff;
+  font-size:14px;
+}
+
+.sizeValue{font-variant-numeric:tabular-nums;color:#bbb}
+.sizeSlider{width:100%;height:22px;margin:0;accent-color:#888}
+
+.dictionarySettingsButton,
+.settingsReturn{
+  grid-column:span 4 !important;
+  width:100%;
+  min-height:58px;
+  height:58px;
+  box-sizing:border-box;
+}
+
+.dictionarySettingsButton{background:#ff9500 !important;color:#fff !important}
+
+.settingOption{
+  min-width:0;
+  padding:0 8px;
+  white-space:normal;
+  line-height:1.15;
+  font-size:15px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.historyLauncher{
+  min-width:0;
+  padding:0 4px;
+  font-size:14px !important;
+  line-height:1.05;
+  white-space:normal;
+  overflow:hidden;
 }
 
 </style>
@@ -577,7 +981,7 @@ NEXT
 
 <div class="dictionaryPanel" id="dictionaryPanel">
   <input id="dictionaryNumber" type="number" inputmode="numeric" min="0" step="1">
-  <div class="dictionaryStatus" id="dictionaryStatus">Enter a number to get back the words</div>
+  <div class="dictionaryStatus" id="dictionaryStatus"></div>
   <div class="dictionaryResults" id="dictionaryResults"></div>
   <button class="dictionaryMore" id="dictionaryMore" type="button" style="display:none">הצג עוד תוצאות</button>
   <button class="dictionaryBack" id="dictionaryBack" type="button">חזור למחשבון</button>
@@ -817,10 +1221,223 @@ let dictionaryMatches=[];
 let dictionaryShown=0;
 const DICTIONARY_PAGE_SIZE=100;
 
+
 let history=
 JSON.parse(
 localStorage.getItem("gematriaHistory")||"[]"
 );
+
+/* =========================================================
+   USER APPEARANCE SETTINGS
+   New options start OFF on a fresh install.
+   ========================================================= */
+
+const defaultUserSettings={
+  buttonSound:false,
+  buttonAnimation:false,
+  smoothTransitions:false,
+  calculatorScale:100,
+  calculatorTheme:"classic"
+};
+
+let userSettings=Object.assign(
+  {},
+  defaultUserSettings,
+  JSON.parse(localStorage.getItem("gematriaUserSettings")||"{}")
+);
+
+function saveUserSettings(){
+  localStorage.setItem("gematriaUserSettings",JSON.stringify(userSettings));
+}
+
+function applyUserSettings(){
+  const calcForScale=document.querySelector(".calculator");
+  if(calcForScale) calcForScale.style.setProperty("--calculator-scale",(Number(userSettings.calculatorScale)||100)/100);
+
+  const calc=document.querySelector(".calculator");
+  if(!calc) return;
+
+  calc.classList.toggle("smooth-ui",!!userSettings.smoothTransitions);
+
+  applyCalculatorTheme(userSettings.calculatorTheme,false);
+}
+
+function playButtonSound(){
+  if(!userSettings.buttonSound) return;
+
+  try{
+    const AudioContext=window.AudioContext||window.webkitAudioContext;
+    if(!AudioContext) return;
+
+    if(!window._gematriaAudioContext){
+      window._gematriaAudioContext=new AudioContext();
+    }
+
+    const ctx=window._gematriaAudioContext;
+    if(ctx.state==="suspended") ctx.resume();
+
+    const osc=ctx.createOscillator();
+    const gain=ctx.createGain();
+
+    osc.type="sine";
+    osc.frequency.value=620;
+    gain.gain.setValueAtTime(.035,ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.055);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start();
+    osc.stop(ctx.currentTime+.055);
+  }catch(error){
+    /* Sound is optional and must never affect the calculator. */
+  }
+}
+
+function pressFeedback(button){
+  if(!button) return;
+
+  if(userSettings.buttonAnimation){
+    button.classList.remove("button-pressed");
+    void button.offsetWidth;
+    button.classList.add("button-pressed");
+    setTimeout(()=>button.classList.remove("button-pressed"),120);
+  }
+
+  playButtonSound();
+}
+
+function setUserSetting(name,value){
+  userSettings[name]=value;
+  saveUserSettings();
+  applyUserSettings();
+  renderButtons();
+}
+
+function applyCalculatorTheme(theme,save=true){
+  const calc=document.querySelector(".calculator");
+  if(!calc) return;
+
+  const themes={
+    classic:{
+      calculator:"#2b2b2b",
+      body:null,
+      button:"#444",
+      text:"#fff",
+      display:"#000",
+      displayText:"#0f0"
+    },
+    midnight:{
+      calculator:"#202a38",
+      body:null,
+      button:"#183b66",
+      text:"#fff",
+      display:"#000",
+      displayText:"#0f0"
+    },
+    slate:{
+      calculator:"#353b40",
+      body:null,
+      button:"#59636d",
+      text:"#fff",
+      display:"#0b0d0e",
+      displayText:"#7dff8a"
+    },
+    white:{
+      calculator:"#e7e7e7",
+      body:null,
+      button:"#d0d0d0",
+      text:"#111",
+      display:"#111",
+      displayText:"#78ff78"
+    }
+  };
+
+  const t=themes[theme]||themes.classic;
+
+  calc.style.background=t.calculator;
+  calc.dataset.theme=theme==="white"?"light":theme;
+
+  /* Keep the existing special-purpose button colours. */
+  calc.style.setProperty("--calculator-button",t.button);
+  calc.style.setProperty("--calculator-text",t.text);
+
+  if(save){
+    userSettings.calculatorTheme=theme;
+    saveUserSettings();
+    renderButtons();
+  }
+}
+
+function addSettingLabel(text){
+  const label=document.createElement("button");
+  label.className="settingLabel";
+  label.innerText=text;
+  buttonsEl.appendChild(label);
+}
+
+function addSettingButton(text,active,onclick,extraClass=""){
+  const b=document.createElement("button");
+  b.className="settingOption "+extraClass+(active?" activeSetting":"");
+  b.innerText=text;
+  b.onclick=()=>{
+    pressFeedback(b);
+    onclick();
+  };
+  buttonsEl.appendChild(b);
+  return b;
+}
+
+function addFeelSwitch(label,key){
+  const row=document.createElement("div");
+  row.className="feelRow";
+
+  const name=document.createElement("span");
+  name.className="feelName";
+  name.textContent=label;
+
+  const sw=document.createElement("button");
+  sw.type="button";
+  sw.className="switch"+(userSettings[key]?" on":"");
+  sw.setAttribute("aria-label",label);
+  sw.setAttribute("aria-pressed",userSettings[key]?"true":"false");
+  sw.onclick=()=>{
+    pressFeedback(sw);
+    setUserSetting(key,!userSettings[key]);
+  };
+
+  row.append(name,sw);
+  buttonsEl.appendChild(row);
+}
+
+function addSizeControl(){
+  const row=document.createElement("div");
+  row.className="sizeRow";
+
+  const top=document.createElement("div");
+  top.className="sizeTop";
+  top.innerHTML='<span>Size</span><span class="sizeValue">'+(Number(userSettings.calculatorScale)||100)+'%</span>';
+
+  const slider=document.createElement("input");
+  slider.className="sizeSlider";
+  slider.type="range";
+  slider.min="70";
+  slider.max="120";
+  slider.step="1";
+  slider.value=Number(userSettings.calculatorScale)||100;
+  slider.setAttribute("aria-label","Calculator size");
+  slider.oninput=()=>{
+    userSettings.calculatorScale=Number(slider.value);
+    top.querySelector(".sizeValue").textContent=slider.value+"%";
+    saveUserSettings();
+    const calc=document.querySelector(".calculator");
+    if(calc) calc.style.setProperty("--calculator-scale",slider.value/100);
+  };
+
+  row.append(top,slider);
+  buttonsEl.appendChild(row);
+}
+
 
 
 /* =========================================================
@@ -930,7 +1547,7 @@ renderButtons();
 
 /* =========================================================
    DICTIONARY MODE
-   Added under Light Mode and Dark Mode in Settings.
+   Uses the existing gematria_dictionary.json exactly as supplied.
    Loads the adjacent JSON file only when first opened.
    ========================================================= */
 
@@ -991,7 +1608,7 @@ async function loadDictionary(){
       })
       .catch(error=>{
         dictionaryLoadPromise=null;
-        dictionaryStatus.textContent="לא ניתן לטעון את המילון. ודא ש-gematria_dictionary.json נמצא ליד index.html ושאתה פותח את האתר דרך GitHub Pages.";
+        dictionaryStatus.textContent="";
         console.error("Dictionary load failed:",error);
         throw error;
       });
@@ -1188,7 +1805,7 @@ buttonsEl.appendChild(b);
 
 let back=document.createElement('button');
 
-back.className='return';
+back.className='return historyReturn';
 
 back.innerText='חזור';
 
@@ -1222,56 +1839,97 @@ buttonsEl.innerHTML='';
 
 /* SETTINGS */
 
-if(settingsMode){
+  if(settingsMode){
 
-let light=document.createElement('button');
+    /* Theme heading */
+    addSettingLabel('Theme');
 
-light.innerText='Light Mode';
+    /* Light / dark are icons, not boxes */
+    const themeRow=document.createElement('div');
+    themeRow.className='themeIconRow';
 
-light.style.background='#ffffff';
+    const lightIcon=document.createElement('button');
+    lightIcon.className='themeIcon lightIcon';
+    lightIcon.innerHTML='☀';
+    lightIcon.title='Light Mode';
+    lightIcon.setAttribute('aria-label','Light Mode');
+    lightIcon.onclick=()=>{
+      pressFeedback(lightIcon);
+      setTheme('light');
+    };
+    themeRow.appendChild(lightIcon);
 
-light.style.color='#000000';
+    const darkIcon=document.createElement('button');
+    darkIcon.className='themeIcon darkIcon';
+    darkIcon.innerHTML='☾';
+    darkIcon.title='Dark Mode';
+    darkIcon.setAttribute('aria-label','Dark Mode');
+    darkIcon.onclick=()=>{
+      pressFeedback(darkIcon);
+      setTheme('dark');
+    };
+    themeRow.appendChild(darkIcon);
 
-light.onclick=()=>setTheme('light');
+    buttonsEl.appendChild(themeRow);
 
-buttonsEl.appendChild(light);
+    /* Calculator colour themes */
+    const colourRow=document.createElement('div');
+    colourRow.className='themeChoicesRow';
+
+    [
+      ['Classic','classic'],
+      ['Midnight','midnight'],
+      ['Slate','slate'],
+      ['White','white']
+    ].forEach(([label,value])=>{
+      const b=document.createElement('button');
+      b.className='themeChoice '+value+'Theme';
+      b.innerText=label;
+      if(userSettings.calculatorTheme===value) b.classList.add('activeSetting');
+      b.onclick=()=>{
+        pressFeedback(b);
+        userSettings.calculatorTheme=value;
+        saveUserSettings();
+        applyCalculatorTheme(value);
+      };
+      colourRow.appendChild(b);
+    });
+
+    buttonsEl.appendChild(colourRow);
+
+    addSettingLabel('Calculator Feel');
+
+    addFeelSwitch('Sound','buttonSound');
+    addFeelSwitch('Animations','buttonAnimation');
+    addFeelSwitch('Transitions','smoothTransitions');
+    addSizeControl();
+
+    /* Dictionary */
+    let dictionaryButton=document.createElement('button');
+    dictionaryButton.className='full dictionarySettingsButton';
+    dictionaryButton.innerText='Dictionary';
+    dictionaryButton.onclick=()=>{
+      pressFeedback(dictionaryButton);
+      openDictionary();
+    };
+    buttonsEl.appendChild(dictionaryButton);
+
+    /* Return */
+    let back=document.createElement('button');
+    back.className='return settingsReturn';
+    back.innerText='חזור';
+    back.onclick=()=>{
+      pressFeedback(back);
+      toggleSettings();
+    };
+    buttonsEl.appendChild(back);
+
+    return;
+
+  }
 
 
-let dark=document.createElement('button');
-
-dark.innerText='Dark Mode';
-
-dark.style.background='#183b66';
-
-dark.style.color='#ffffff';
-
-dark.onclick=()=>setTheme('dark');
-
-buttonsEl.appendChild(dark);
-
-let dictionaryButton=document.createElement('button');
-dictionaryButton.className='full';
-dictionaryButton.innerText='Dictionary';
-dictionaryButton.style.background='#0a84ff';
-dictionaryButton.onclick=openDictionary;
-buttonsEl.appendChild(dictionaryButton);
-
-let back=document.createElement('button');
-
-back.className='return';
-
-back.innerText='חזור';
-
-back.onclick=toggleSettings;
-
-buttonsEl.appendChild(back);
-
-return;
-
-}
-
-
-/* FINAL LETTERS */
+  /* FINAL LETTERS */
 
 if(showFinal){
 
@@ -1281,7 +1939,7 @@ let b=document.createElement('button');
 
 b.innerText=k;
 
-b.onclick=()=>add(k);
+b.onclick=()=>{pressFeedback(b);add(k);};
 
 buttonsEl.appendChild(b);
 
@@ -1294,7 +1952,7 @@ r.className='return';
 
 r.innerText='חזור';
 
-r.onclick=toggleKeyboard;
+r.onclick=()=>{pressFeedback(r);toggleKeyboard();};
 
 buttonsEl.appendChild(r);
 
@@ -1311,7 +1969,7 @@ let b=document.createElement('button');
 
 b.innerText=k;
 
-b.onclick=()=>add(k);
+b.onclick=()=>{pressFeedback(b);add(k);};
 
 buttonsEl.appendChild(b);
 
@@ -1326,7 +1984,7 @@ t.className='toggle';
 
 t.innerText='סופיות';
 
-t.onclick=toggleKeyboard;
+t.onclick=()=>{pressFeedback(t);toggleKeyboard();};
 
 buttonsEl.appendChild(t);
 
@@ -1339,7 +1997,7 @@ eq.className='equal';
 
 eq.innerText='=';
 
-eq.onclick=pressEquals;
+eq.onclick=()=>{pressFeedback(eq);pressEquals();};
 
 buttonsEl.appendChild(eq);
 
@@ -1350,7 +2008,7 @@ let sp=document.createElement('button');
 
 sp.className='space';
 
-sp.onclick=()=>add(' ');
+sp.onclick=()=>{pressFeedback(sp);add(' ');};
 
 buttonsEl.appendChild(sp);
 
@@ -1363,7 +2021,7 @@ clr.className='clear';
 
 clr.innerText='C';
 
-clr.onclick=clearAll;
+clr.onclick=()=>{pressFeedback(clr);clearAll();};
 
 buttonsEl.appendChild(clr);
 
@@ -1371,6 +2029,8 @@ buttonsEl.appendChild(clr);
 /* HISTORY */
 
 let title=document.createElement('button');
+
+title.className='historyLauncher';
 
 title.style.background='white';
 
@@ -1391,6 +2051,7 @@ buttonsEl.appendChild(title);
 /* Start calculator */
 
 renderButtons();
+applyUserSettings();
 
 </script>
 
