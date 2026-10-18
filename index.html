@@ -854,7 +854,7 @@ body{
 }
 
 </style>
-   <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 </head>
 
 <body>
@@ -969,7 +969,7 @@ NEXT
 
 <div class="settingsBtn" onclick="toggleSettings()">⚙️</div>
 
-<div class="topnote">בס״ד</div>
+<div class="topnote" onclick="clearHistoryFromBSd()">בס״ד</div>
 
 <div class="display">
 
@@ -1220,6 +1220,8 @@ let dictionaryLoadPromise=null;
 let dictionaryMatches=[];
 let dictionaryShown=0;
 const DICTIONARY_PAGE_SIZE=100;
+
+let historyMode=false;
 
 
 let history=
@@ -1793,10 +1795,30 @@ updateDisplay();
 
 
 /* =========================================================
+   CLEAR HISTORY FROM בס״ד
+   Only works while the History screen is open.
+   ========================================================= */
+
+function clearHistoryFromBSd(){
+
+if(!historyMode) return;
+
+history=[];
+
+localStorage.removeItem("gematriaHistory");
+
+loadLast();
+
+}
+
+
+/* =========================================================
    SHOW HISTORY
    ========================================================= */
 
 function loadLast(){
+
+historyMode=true;
 
 buttonsEl.innerHTML='';
 
@@ -1866,6 +1888,8 @@ const finalK=[
 
 
 function renderButtons(){
+
+historyMode=false;
 
 buttonsEl.innerHTML='';
 
