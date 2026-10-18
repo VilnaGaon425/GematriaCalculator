@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>Gematria Calculator</title>
 <link rel="manifest" href="manifest.webmanifest">
-   
+
 <style>
 body{
 margin:0;
@@ -210,16 +210,7 @@ cursor:pointer;
 .instructionsNext:hover{
 background:#222;
 }
-#introButtonsRow{
-  display:flex;
-  justify-content:center;
-  gap:12px;
-  margin-top:20px;
-}
 
-#introButtonsRow .instructionsNext{
-  width:220px;
-}
 
 /* =========================
    CALCULATOR
@@ -957,21 +948,14 @@ Once installed, Gematria Calculator can be used offline.
 </p>
 
 </div>
-<div id="introButtonsRow">
 
-  <div id="installOffer" style="display:none;">
-    <button
-      id="installAppButton"
-      class="instructionsNext">
-      INSTALL APP
-    </button>
-  </div>
+<button
+class="instructionsNext"
+onclick="finishIntroduction()">
+NEXT
+</button>
 
-  <button
-    class="instructionsNext"
-    onclick="finishIntroduction()">
-    NEXT
-  </button>
+</div>
 
 </div>
 
@@ -2120,52 +2104,7 @@ title.onclick=loadLast;
 buttonsEl.appendChild(title);
 
 }
-window.addEventListener("appinstalled", () => {
-  localStorage.setItem("gematriaInstalled", "yes");
 
-  const installButton =
-    document.getElementById("installAppButton");
-
-  if (installButton) {
-    installButton.style.display = "none";
-  }
-});
-
-let deferredInstallPrompt = null;
-
-window.addEventListener("beforeinstallprompt", (e) => {
-  e.preventDefault();
-
-  deferredInstallPrompt = e;
-
-  const installButton =
-    document.getElementById("installAppButton");
-
-  if (installButton) {
-    installButton.style.display = "block";
-  }
-});
-
-document.addEventListener("click", async (e) => {
-
-  if (e.target.id !== "installAppButton") return;
-
-  if (!deferredInstallPrompt) return;
-
-  deferredInstallPrompt.prompt();
-
-  await deferredInstallPrompt.userChoice;
-
-  deferredInstallPrompt = null;
-
-  e.target.style.display = "none";
-});
-
-
-/* Start calculator */
-
-renderButtons();
-applyUserSettings();
 
 /* Start calculator */
 
