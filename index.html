@@ -210,7 +210,16 @@ cursor:pointer;
 .instructionsNext:hover{
 background:#222;
 }
+#introButtonsRow{
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  margin-top:20px;
+}
 
+#introButtonsRow .instructionsNext{
+  width:220px;
+}
 
 /* =========================
    CALCULATOR
@@ -948,19 +957,21 @@ Once installed, Gematria Calculator can be used offline.
 </p>
 
 </div>
-<button
-  id="installAppButton"
-  class="instructionsNext"
-  style="display:none;margin-bottom:12px;background:#0a84ff;">
-  INSTALL APP
-</button>
-<button
-class="instructionsNext"
-onclick="finishIntroduction()">
-NEXT
-</button>
+<div id="introButtonsRow">
 
-</div>
+  <div id="installOffer" style="display:none;">
+    <button
+      id="installAppButton"
+      class="instructionsNext">
+      INSTALL APP
+    </button>
+  </div>
+
+  <button
+    class="instructionsNext"
+    onclick="finishIntroduction()">
+    NEXT
+  </button>
 
 </div>
 
