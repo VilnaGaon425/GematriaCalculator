@@ -1637,9 +1637,42 @@ function searchDictionary(){
     return;
   }
   const key=useKatan ? "misparKatan" : "gematria";
-  dictionaryMatches=dictionaryData
-    .filter(item=>item[key]===value)
-    .sort((a,b)=>b.occurrences-a.occurrences || a.word.localeCompare(b.word,"he"));
+const sourcePriority = {
+  "Tanach,Mishnah,Gemara": 1,
+  "Mishnah,Tanach,Gemara": 1,
+
+  "Tanach,Mishnah": 2,
+  "Mishnah,Tanach": 2,
+
+  "Tanach,Gemara": 3,
+  "Gemara,Tanach": 3,
+
+  "Mishnah,Gemara": 4,
+  "Gemara,Mishnah": 4,
+
+  "Tanach": 5,
+  "Mishnah": 6,
+  "Gemara": 7
+};
+
+dictionaryMatches=dictionaryData
+  .filter(item=>item[key]===value)
+  .sort((a,b)=>{
+    const aSources=Array.isArray(a.sources)
+      ? a.sources.slice().sort().join(",")
+      : a.sources;
+
+    const bSources=Array.isArray(b.sources)
+      ? b.sources.slice().sort().join(",")
+      : b.sources;
+
+    return (
+      (sourcePriority[aSources]||99) -
+      (sourcePriority[bSources]||99)
+    ) ||
+    b.occurrences-a.occurrences ||
+    a.word.localeCompare(b.word,"he");
+  });
   if(dictionaryMatches.length===0){
     dictionaryStatus.textContent="לא נמצאו מילים עם "+(useKatan?"Mispar Katan":"Gematria")+" "+value+".";
     return;
