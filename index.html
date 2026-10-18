@@ -949,11 +949,34 @@ Once installed, Gematria Calculator can be used offline.
 
 </div>
 
+<div style="
+display:flex;
+justify-content:center;
+gap:12px;
+margin-top:20px;
+">
+
+<button
+id="installAppButton"
+class="instructionsNext"
+style="
+display:none;
+background:#0a84ff;
+margin-top:0;
+"
+type="button">
+INSTALL
+</button>
+
 <button
 class="instructionsNext"
-onclick="finishIntroduction()">
+style="margin-top:0;"
+onclick="finishIntroduction()"
+type="button">
 NEXT
 </button>
+
+</div>
 
 </div>
 
@@ -2104,7 +2127,52 @@ title.onclick=loadLast;
 buttonsEl.appendChild(title);
 
 }
+let deferredInstallPrompt = null;
 
+window.addEventListener("beforeinstallprompt", (e) => {
+
+  e.preventDefault();
+
+  deferredInstallPrompt = e;
+
+  const installButton =
+    document.getElementById("installAppButton");
+
+  if (installButton) {
+    installButton.style.display = "flex";
+  }
+});
+
+window.addEventListener("appinstalled", () => {
+
+  const installButton =
+    document.getElementById("installAppButton");
+
+  if (installButton) {
+    installButton.style.display = "none";
+  }
+});
+
+const installButton =
+  document.getElementById("installAppButton");
+
+if (installButton) {
+
+  installButton.addEventListener(
+    "click",
+    async () => {
+
+      if (!deferredInstallPrompt) return;
+
+      deferredInstallPrompt.prompt();
+
+      await deferredInstallPrompt.userChoice;
+
+      deferredInstallPrompt = null;
+    }
+  );
+
+}
 
 /* Start calculator */
 
